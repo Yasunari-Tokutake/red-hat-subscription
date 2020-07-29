@@ -5,16 +5,17 @@
 
 ### Tips
 
-[RedHat Subscription](https://rol.redhat.com/rol/app/)
+- [RedHat Subscription](https://rol.redhat.com/rol/app/)
 Subscriptionへのアクセス
 
-[ISE-MQ/Forum/study/RedhatSubscription](https://github.ibm.com/ISE-MQ/Forum/tree/master/study/RedhatSubscription)
+- [ISE-MQ/Forum/study/RedhatSubscription](https://github.ibm.com/ISE-MQ/Forum/tree/master/study/RedhatSubscription)
+進捗と疑問はここに
 
-[コンテナの作り方](https://www.slideshare.net/zembutsu/what-isdockerdoing)
+- [コンテナの作り方](https://www.slideshare.net/zembutsu/what-isdockerdoing)
 
-[Kubernetes Components](https://kubernetes.io/ja/docs/concepts/overview/components/)  
+- [Kubernetes Components](https://kubernetes.io/ja/docs/concepts/overview/components/)  
 Kubernetesを構成するコンポーネントの説明
 
-[ibm-messaging/mq-container](https://github.com/ibm-messaging/mq-container)
+- [ibm-messaging/mq-container](https://github.com/ibm-messaging/mq-container)
 MQコンテナのイメージをビルドするDockerfile。これを使ってローカルにMQコンテナを起動できる
 
