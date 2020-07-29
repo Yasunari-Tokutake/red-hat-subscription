@@ -3,7 +3,9 @@
 
 
 
-#### Tips
+### Tips
+
+[RedHat Subscription](https://rol.redhat.com/rol/app/)
 
 [Kubernetes Components](https://kubernetes.io/ja/docs/concepts/overview/components/)  
 Kubernetesを構成するコンポーネントの説明
