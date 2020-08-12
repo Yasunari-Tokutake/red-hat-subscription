@@ -239,7 +239,39 @@ oc set env コマンドを使用して、シークレット値からアプリケ
 
 #### 演習
 
+MySQL データベースにアクセスするための資格情報と接続情報が含まれるシークレットを作成します。
 
+> oc create secret generic mysql --from-literal user=myuser --from-literal password=redhat123 --from-literal database=test_secrets --from-literal hostname=mysql 
+
+上記のシークレットを使用して、mysql デプロイ設定の環境変数を初期化します。
+初期化を成功させるには、デプロイに MYSQL_USER、MYSQL_PASSWORD、MYSQL_DATABASE の各環境変数が必要になります。
+シークレットには、user キー、password キー、database キーがあります。
+これらは、環境変数としてデプロイ設定に割り当てることができ、MYSQL_ プレフィックスを追加します。
+**シークレットを事前に作成し上で、Prefixで必要な接頭子？をつけてあげれば、デプロイ設定の環境変数に代入できる。**
+
+> oc set env dc/mysql --prefix MYSQL_ --from secret/mysql
+> oc set env dc/quotes --prefix QUOTES_ --from secret/mysql
+
+- memo(外部公開から確認まで)
+> oc expose service quotes (quotesというアプリケーションサービスを外部に公開)
+> oc get route quotes (公開したアプリケーションサービスのホスト名を確認)
+ex)
+```
+NAME     HOST/PORT                                                        ...
+quotes   quotes-authorization-secrets.apps.cluster.domain.example.com     ...
+```
+> curl http://quotes-authorization-secrets.apps.cluster.domain.example.com/RESTエントリーポイント (アプリケーションにアクセス)
+```
+oc logs pod/xxx(RUNNING)でRESTエントリーポイント(env, status, random)を確認できる。
+
+ex) 
+starting application
+Services:
+/
+/random
+/env
+/status
+```
 
 
 ## セキュリティーコンテキスト制約 (SCC) を使用したアプリケーションパーミッションの制御
@@ -264,7 +296,6 @@ OpenShift は、8 つの SCC を提供します。
 
 - anyuid
     -run as user 戦略が RunAsAny として定義され、これは、コンテナーで利用できる任意のユーザー ID としてポッドが実行できることを意味します。これにより、特定のユーザーを必要とするコンテナーが、特定のユーザー ID を使用してコマンドを実行できます。
-
 - hostaccess
 - hostmount-anyuid
 - hostnetwork
@@ -312,17 +343,52 @@ Settings:
 異なる SCC を使用して実行されるようコンテナーを変更するには、ポッドにバインドされるサービスアカウントを作成する必要があります。
 サービスアカウントを作成するには、次のコマンドを使用します。 
 
-> oc create serviceaccount service-account-name
+> oc create serviceaccount(sa) service-account-name
 
 サービスアカウントを SCC と関連付けるには、次のコマンドを使用します。 
 
-> oc adm policy add-scc-to-user SCC -z service-account
+> oc adm policy add-scc-to-user SCC -z service-account-name
 
 高度なセキュリティー要件を必要とするポッドをどのアカウントで作成できるか特定するには、 scc-subject-review サブコマンドを使用します。これにより、コンテナーの制約を克服するために使用できるすべてのSCCが返されます。次に例を示します
-
+s
 > oc get pod podname -o yaml | oc adm policy scc-subject-review -f -
 
 
 #### 特権コンテナー
 
 コンテナーによっては、ホストのランタイム環境にアクセスする必要があります。たとえば、S2I ビルダーコンテナーは、固有コンテナーの制限を超えたアクセス権を必要とする特権コンテナーの一種です。これらのコンテナーは、OpenShift ノード上でどのようなリソースでも使用できるため、セキュリティーリスクをもたらす可能性があります。SCC を使用して、特権アクセスを付与したサービスアカウントを作成することにより、特権コンテナーのアクセス権を有効化できます。 
+
+
+#### 演習
+
+
+## オープンラボ
+
+self-provisioner クラスターロールを system:authenticated:oauth 仮想グループから削除します。
+
+> oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated:oauth
+
+wp-mgrs という名前のグループを作成します。
+
+> oc adm groups new wp-mgrs
+
+クラスター作成権限を wp-mgrs グループに付与します。
+
+> oc adm policy add-cluster-role-to-group self-provisioner wp-mgrs
+
+leader ユーザーを wp-mgrs グループに追加します。
+
+> oc adm groups add-users wp-mgrs leader
+
+authorization-review プロジェクトに関して、wp-devs グループに編集権限を付与します。 
+
+> oc policy add-role-to-group edit wp-devs
+
+wordpress-sa という名前のサービスアカウントを作成します。 
+
+> oc create sa wordpress-sa
+
+wordpress-sa サービスアカウントに anyuid SCC を付与します。
+
+> oc adm policy add-scc-to-user anyuid -z wordpress-sa
+
