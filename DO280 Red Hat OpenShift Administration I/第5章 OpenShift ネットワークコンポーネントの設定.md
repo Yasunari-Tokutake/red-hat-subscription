@@ -261,3 +261,37 @@ ex)
 
 上図は、コンテナーにシークレットリソースをマウントする方法を示しています。その後、アプリケーションが証明書にアクセスできるようになります。このモードでは、クライアントとルーターの間で暗号化は行われません。 
 
+
+## review
+
+4. 暗号化されたバージョンのアプリケーション用に TLS 証明書を生成して署名します。
+
+証明書署名要求(CSR)を生成し、それを用いて証明書(CRT)を生成する。
+
+- CSRの生成
+
+> openssl req -new -subj "/C=US/ST=North Carolina/L=Raleigh/O=Red Hat/CN=php-https.${RHT_OCP4_WILDCARD_DOMAIN}" -key training.key -out **training.csr**
+
+しかし、エラー。一応手順通だが、コマンドが長すぎると言われた。
+```
+~ string too long ~ maxsize=64
+```
+
+名前適当に(CNを適当にしたため、サイトにはアクセスできないが)し、先に進む。
+
+[Common Name](https://www.ssl-store.jp/common-name%EF%BC%88%E3%82%B3%E3%83%A2%E3%83%B3%E3%83%8D%E3%83%BC%E3%83%A0%EF%BC%89%E3%81%A8%E3%81%AF%E4%BD%95%E3%81%A7%E3%81%99%E3%81%8B%EF%BC%9F/)
+
+ - CRTの生成
+
+> openssl x509 -req -in **training.csr** -passin file:passphrase.txt -CA training-CA.pem -CAkey training-CA.key -CAcreateserial -out **training.crt** -days 3650 -sha256 -extfile training.ext
+
+-> CRTとKEYが生成された。
+
+- 生成したCRTとKEYを使用して、php-certsという名前のTLSシークレットを作成
+
+> oc create secret tls php-certs --cert=certs/training.crt --key=certs/training.key
+
+- パススルールートで外部に公開(=oc expose『非セキュア』、ルートタイプを指定したい場合はoc create route)
+
+> oc create route passthrough php-https --service php-https --port 8443 --hostname 公開したいホスト名
+
