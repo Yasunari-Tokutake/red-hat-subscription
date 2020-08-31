@@ -10,8 +10,9 @@
     - [Red Hatのマニュアル](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/)を参照しながら
 - DO280-retry
     - [Red Hatのマニュアル](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/)を参照しながら
-- MQコンテナを起動
+- (MQコンテナを起動)
 
+- 10月中に、EX280を受ける。
 
 ### Tips
 
