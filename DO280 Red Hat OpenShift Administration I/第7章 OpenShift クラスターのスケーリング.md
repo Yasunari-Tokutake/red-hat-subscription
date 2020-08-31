@@ -59,6 +59,8 @@ spec:
 
 **MachineSet はマシンにとって、ポッドに対する ReplicaSet と同じです。このリソースによって指定されたレプリカ (マシン) の数をスケールインおよびスケールアウトできます。**
 
+**MachineSetは、クラスター内に複数存在可能。**
+
 ```
 apiVersion: machine.openshift.io/v1beta1
 kind: MachineSet
@@ -163,6 +165,13 @@ spec:
 #### MEMO
 
 **-n : namespace 名前空間**
+
+kubernetesでは、名前空間、openshiftで拡張されて、openshiftではnamespace = プロジェクト
+
+ex) oc new-app --name プロジェクト名 
+
+- [第1章 MachineSet の作成](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.1/html/machine_management/creating-machineset#machine-api-overview_creating-machineset)
+- [Kubernetes と OpenShift の違いを確かめてみた](https://qiita.com/MahoTakara/items/394bb7518d86ea0dd2c7)
 
 ---
 

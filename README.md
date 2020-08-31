@@ -6,7 +6,10 @@
 - DO180 完了
 - DO101 完了
 - DO280 <- 今ここ
-- DO180-Retry & ログを残す
+- DO180-retry & ログを残す
+    - [Red Hatのマニュアル](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/)を参照しながら
+- DO280-retry
+    - [Red Hatのマニュアル](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/)を参照しながら
 - MQコンテナを起動
 
 
