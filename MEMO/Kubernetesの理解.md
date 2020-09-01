@@ -3,7 +3,7 @@
 - 参照
     - [Kubernetesのコンポーネント](https://kubernetes.io/ja/docs/concepts/overview/components/)
     - [コンテナを使いこなすための心強い味方!「Kubernetes」(前編)](https://thinkit.co.jp/article/17453)
-
+    - [コンテナを使いこなすための心強い味方!「Kubernetes」(中編)](https://thinkit.co.jp/article/17535)
 
 ---
 
@@ -208,3 +208,104 @@ kubeletから **CRI(Container Runtime Interface)**　
 OCIは低レベルランタイムの標準仕様で、設定ファイルを元に作られるNamespaceやcgroupなどの仕様が定められています。
 
 ![image11](images_memo/image11.png)
+
+
+---
+
+## Manifest(マニフェスト)
+
+**Kubernetesでは各種リソース構成や実行するコンテナイメージなどをYAML形式で記述します。それが“Manifest”と呼ばれるファイルです。**
+
+ManifestにKubernetesクラスタの「望ましい状態」を事前に定義し、マスターノードに登録して管理することで、インフラのコード化とも言われる「Infrastructure as Code」を実現しています。
+
+![image12](images_memo/image12.png)
+
+
+## Kubernetesの中で働くリソース
+
+Kubernetesのリソースとは、Kubernetesの中にコンテナを作り、アプリケーションを動かすための部品です。外部のネットワークへコンテナを公開するまでには、様々な種類のリソースを駆使することになります。
+
+たくさんある。詳細は以下のリンクを参照。
+
+- [コンテナを使いこなすための心強い味方!「Kubernetes」(中編)](https://thinkit.co.jp/article/17535)
+
+
+## LabelとSelector
+
+KubernetesではPodやService、Deploymentなど様々なリソースを多数作成して管理できますが、数が増えれば増えるほど、どのリソースがどのような用途を想定したものかを把握することは困難になります。
+
+そこで用いられるのが「**Label**」と「**Selector**」です。
+
+Kubernetesでは、リソースの種類やアプリケーションの用途などに応じてLabelとSelectorでグループ化することで、複雑化していく環境をシンプルにできます。
+
+- Label
+
+Podなどのリソースをグループ化します。
+
+- Selector
+
+グループ化された特定のリソースを使用する際に指定します。
+
+![image13](images_memo/image13.png)
+
+
+## Namespace
+
+Namespaceとは、様々なコンピュータリソースを分離・独立し、お互いの干渉を防ぐためのLinuxカーネルの機能です。
+
+同様に、**KubernetesのNamespaceも複数のワーカーノードを横断して「kubernetesリソース」の分離と独立を制御できます。**
+
+kubernetesで他のリソースに干渉されず安全にコンテナを動かすためには、まず独自の**Namespace(= openshift上のprojectかな)** を作り、コンテナを配置するところからはじまる。
+
+- Kubernetesには環境を作成した時点で3つのNamespaceが用意されています。
+    - default：特にどのNamespaceに配置するかを決めていないリソースのためのデフォルト用
+    - kube-system：Kubernetesが作成したコンポーネントや管理用のリソース用
+    - kube-public：Kubernetesにアクセスする全ユーザーが利用できるように意図的に配置したリソース用
+
+
+## Pod
+
+各ノードに直接コンテナを起動するのではなく、Podという最小単位で(アプリケーションの)コンテナを実行していきます。
+
+Podには固有の仮想IPアドレスが割り当てられ、**Pod内のコンテナはIPアドレスやポート、ネットワーク名前空間をそれぞれ共有するという特徴があります。**
+そのため、Pod内に複数のコンテナが存在する(**非推奨**)場合、コンテナは自身を指定することで(localhost指定)お互いに通信できるのです。
+
+Podのもう1つの特徴はボリュームも共有できることです。
+より正確には、Podに共有化されたストレージボリュームを指定することで、Pod内の全てのコンテナがそのストレージにアクセスできるようになる。
+
+![image14](images_memo/image14.png)
+
+
+**Podとその中のコンテナは「1Pod1コンテナ」構成が一般的とされています。**
+
+例外として、IPアドレスやボリュームなどを同一Pod内のコンテナで共有しコンテナ間で密に連携するようなアプリケーションの場合は、1つのPodに複数のコンテナを収めたほうが良い場合もある。
+
+![image15](images_memo/image15.png)
+
+
+## ReplicaSet
+
+KubernetesクラスタではノードやPodに障害が発生しても、Podを他のノードに自動で配置し直すなど、事前に定義しておける = **セルフヒーリング**
+
+- ReplicaSet
+
+セルフヒーリングを最もイメージしやすいのが**ReplicaSet** です。
+
+ReplicaSetはどのような時でも事前に指定した数のPodを維持します。
+
+例えば、あるアプリケーションを動作させるPodがあり、管理者はReplicaSetで常に同じPodを2つ維持してほしいと定義します。稼動中、何らかの障害で片方が停止すると、ReplicaSetはすかさず同じPodを新規に作成します。また、ノードに障害が発生し両方のPodが停止した場合でも、事前に定義した数を満たすため、新規で別のノードにPodを作成します。
+
+![image16](images_memo/image16.png)
+
+
+## Deployment
+
+DeploymentはReplicaSetを管理して、ローリングアップデート(ローリングアップデートとは、簡単に言うと少しずつ(全体ではなく1台ずつのイメージ)新しい物に入れ替えるアップデート方法)やロールバックを実現します。
+
+DeploymentとReplicaSetの関係性を整理すると、ReplicaSetはPod数を管理し、**DeploymentはそのReplicaSetを管理します。**
+
+スーパーマーケットの商品棚を例に挙げると、ReplicaSetの入れ替えでは一時的に棚が空になりますが、Deploymentのローリングアップデートでは商品が少しずつ入れ替わるため棚が空にならないというメリットがあります。つまり、**アプリケーションに接続できない状態が発生しないということになります。**
+
+
+## Service
+
