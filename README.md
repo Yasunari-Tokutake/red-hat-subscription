@@ -14,6 +14,7 @@
 
 - 10月中に、EX280を受ける。
 
+
 ### Tips
 
 - [RedHat Subscription](https://rol.redhat.com/rol/app/)
