@@ -81,7 +81,7 @@ kube-api-serverの凄いところは認証認可に留まらず、リクエス�
 
 - 補足
 
-API」とは、「Application Programming Interface」
+「API」とは、「Application Programming Interface」
 
 インターフェイスとは、コンピュータ用語でいうと、「何か」と「何か」をつなぐものという意味を持ちます。
 
@@ -449,3 +449,5 @@ Logging driverをFluentdに指定することで、構造化したログデー�
 また、Fluentdの出力プラグインを用いて収集したログデータを様々な形式に変換して保存することもでき、保存先には外部のストレージやAmazon S3、Google Cloud Storageといったパブリッククラウドのオブジェクトストレージも指定できる。
 
 ![image23](images_memo/image23.png)
+
+**Finish!!**
