@@ -5,8 +5,8 @@
 
 - DO180 完了
 - DO101 完了
-- DO280 <- 今ここ
-- DO180-retry & ログを残す
+- DO280 完了
+- DO180-retry & ログを残す <- 9/10 ~ 9/30まで
     - [Red Hatのマニュアル](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/)を参照しながら
 - DO280-retry
     - [Red Hatのマニュアル](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/)を参照しながら
