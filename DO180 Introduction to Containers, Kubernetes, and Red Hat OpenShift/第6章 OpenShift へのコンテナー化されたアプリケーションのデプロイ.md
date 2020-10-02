@@ -887,3 +887,90 @@ BuildConfig と DeploymentConfig のリソースは、直接やり取りする�
 
 ## ガイド付き演習: Source-to-Image を使用したコンテナー化されたアプリケーションの作成
 
+[gitコマンドの参考](https://qiita.com/yukibe/items/9ef9d54f2e7d53cfb51c)
+
+- gitの操作
+```
+[student@workstation openshift-s2i]$ cd ~/DO180-apps
+
+[student@workstation DO180-apps]$ git checkout master (checkoutはワークツリーの切り替え)
+...output omitted...
+```
+
+- 新しいブランチを作成し、この演習中に行った変更を保存します。
+```
+[student@workstation DO180-apps]$ git checkout -b s2i
+Switched to a new branch 's2i'
+[student@workstation DO180-apps]$ git push -u origin s2i
+...output omitted...
+ * [new branch]      s2i -> s2i
+Branch s2i set up to track remote branch s2i from origin.
+```
+
+- phpアプリケーションの作成
+```
+[student@workstation DO180-apps]$ oc new-app --as-deployment-config --name=php-helloworld php:7.3~https://github.com/${RHT_OCP4_GITHUB_USER}/DO180-apps#s2i --context-dir php-helloworld
+```
+
+- 上記アプリケーション作成で使用したindex.php ファイルを編集
+```
+<?php
+print "Hello, World! php version is " . PHP_VERSION . "\n";
+print "A change is a coming!\n"; <- 追記
+?>
+```
+
+- 変更をコミットして、コードをリモート Git リポジトリにプッシュ
+```
+[student@workstation php-helloworld]$ git add . (add：ファイルをインデックスに追加する（コミットの対象にする）)
+
+[student@workstation php-helloworld]$ git commit -m "Changed"
+[s2i 776c5a5] Changed
+ 1 file changed, 1 insertion(+)
+
+[student@workstation php-helloworld]$ git push origin s2i (origin=https://github.com/Yasunari0118/DO180-apps のbranchであるs2iにpushの意)
+Counting objects: 7, done.
+Delta compression using up to 2 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (4/4), 403 bytes | 0 bytes/s, done.
+Total 4 (delta 1), reused 0 (delta 0)
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/Yasunari0118/DO180-apps
+   f7cd896..776c5a5  s2i -> s2i
+```
+
+- 新規 Source-to-Image ビルドプロセスを開始し、ビルドとデプロイが完了するまで待機
+```
+[student@workstation php-helloworld]$ oc start-build php-helloworld(同じ名前)
+build.build.openshift.io/php-helloworld-2 started
+
+[student@workstation php-helloworld]$ oc get pods -w
+NAME                            READY   STATUS              RESTARTS   AGE
+php-helloworld-part2-1-build    0/1     Completed           0          7m24s
+php-helloworld-part2-1-deploy   0/1     Completed           0          6m45s
+php-helloworld-part2-1-qlnvm    1/1     Running             0          6m42s
+php-helloworld-part2-2-build    0/1     Completed           0          40s
+php-helloworld-part2-2-deploy   0/1     ContainerCreating   0          1s
+php-helloworld-part2-2-deploy   0/1     ContainerCreating   0          2s
+php-helloworld-part2-2-deploy   1/1     Running             0          2s
+php-helloworld-part2-2-zgzm5    0/1     Pending             0          0s
+php-helloworld-part2-2-zgzm5    0/1     Pending             0          0s
+php-helloworld-part2-2-zgzm5    0/1     ContainerCreating   0          0s
+php-helloworld-part2-2-zgzm5    0/1     ContainerCreating   0          3s
+php-helloworld-part2-2-zgzm5    1/1     Running             0          5s
+php-helloworld-part2-1-qlnvm    1/1     Terminating         0          6m49s　(削除)
+php-helloworld-part2-1-qlnvm    0/1     Terminating         0          6m50s
+php-helloworld-part2-1-qlnvm    0/1     Terminating         0          6m51s
+php-helloworld-part2-1-qlnvm    0/1     Terminating         0          6m51s
+php-helloworld-part2-2-deploy   0/1     Completed           0          12s
+```
+**php-helloworld-2がデプロイされたことで更新前のpodは自動で削除される**
+
+
+- 変更を確認
+```
+[student@workstation php-helloworld]curl php-helloworld-part2-yasunari-tokutake-s2i.apps.ap45.prod.nextcle.com
+Hello, World! php version is 7.3.11
+A change is coming
+```
+
