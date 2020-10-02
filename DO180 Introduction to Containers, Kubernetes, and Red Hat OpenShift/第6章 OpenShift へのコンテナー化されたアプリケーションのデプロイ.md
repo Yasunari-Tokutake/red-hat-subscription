@@ -899,7 +899,7 @@ BuildConfig と DeploymentConfig のリソースは、直接やり取りする�
 
 - 新しいブランチを作成し、この演習中に行った変更を保存します。
 ```
-[student@workstation DO180-apps]$ git checkout -b s2i
+[student@workstation DO180-apps]$ git checkout -b s2i (ckeckoutで、新しいbranchを作成し、切り替え)
 Switched to a new branch 's2i'
 [student@workstation DO180-apps]$ git push -u origin s2i
 ...output omitted...
@@ -974,3 +974,7 @@ Hello, World! php version is 7.3.11
 A change is coming
 ```
 
+
+## review
+
+OK!!
