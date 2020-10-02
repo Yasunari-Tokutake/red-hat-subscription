@@ -6,14 +6,14 @@
 - DO180 完了
 - DO101 完了
 - DO280 完了
-- DO180-retry & ログを残す <- 9/10 ~ 9/30まで
+- DO180-retry & ログを残す <- 9/10 ~ 10/9まで
     - [Red Hatのマニュアル](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/)を参照しながら
-- DO280-retry
+- DO280-retry <- 
     - [Red Hatのマニュアル](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/)を参照しながら
-- (MQコンテナを起動)
+- 試験日まで、DO180とDO280を繰り返す
 
 - 10月中に、EX280を受ける。
-
+- (MQコンテナを起動)
 
 ### Tips
 
