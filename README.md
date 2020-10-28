@@ -12,7 +12,7 @@
     - [Red Hatのマニュアル](https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.5/)を参照しながら
 - 試験日まで、DO180とDO280を繰り返す
 
-- 10月中に、EX280を受ける。
+- EX280を受ける。
 - (MQコンテナを起動)
 
 ### Tips
