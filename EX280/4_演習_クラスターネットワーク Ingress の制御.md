@@ -70,6 +70,8 @@ secretにtodo-sertsが指定されたyamlファイルからアプリケーショ
 
 ## 安全なルート
 
+**oc createで作成、oc exposeではない**
+
 #### edge route
 
 > $ oc create route edge todo-https --service todo-http --hostname todo-https.apps.ocp4.example.com
