@@ -9,6 +9,10 @@
 
 ## めも
 
+```
+oc debug で、擬似アプリを起動できて、動作テストとかできる
+oc status、oc logs、oc describe、oc execでエラー原因を探せるかなー
+```
 
 
 
