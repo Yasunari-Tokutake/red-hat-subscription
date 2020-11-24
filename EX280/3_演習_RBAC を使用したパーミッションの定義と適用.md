@@ -20,6 +20,8 @@
 
 > $ oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated:oauth
 
+２回目：×
+
 > $ oc policy add-role-to-user admin leader (admin権限があるuserならadmコマンドは無くてもいい)
 
 > $ oc adm groups new dev-group
