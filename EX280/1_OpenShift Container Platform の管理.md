@@ -9,12 +9,15 @@
 
 DO180の6,8章は確認しといた方がいいかな〜(ocコマンド)
 
+
+---
+
+- https://rol.redhat.com/rol/app/courses/do280-4.5/pages/ch02s03
+
 ## Web コンソールを使用して、OpenShift クラスタを管理および構成する
 
 ## プロジェクトを作成して削除する
 
-- コマンド
-```
 oc new-project xxxx
 
 oc new-app --name xxxx 
@@ -22,13 +25,19 @@ oc new-app --name xxxx
 oc create -f xxxx.yaml --save-config
 
 oc delete project xxxx
-```
+
 
 ## Kubernetes リソースをインポート、エクスポート、設定する
 
+
+
 ## リソースとクラスタのステータスを確認する
 
+oc status
+
 ## ログを確認する
+
+oc logs
 
 ## クラスタイベントとアラートを監視する
 

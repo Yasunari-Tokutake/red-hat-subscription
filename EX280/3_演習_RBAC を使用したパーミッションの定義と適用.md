@@ -33,3 +33,5 @@
 > $ oc get rolebindings **-o wide**
 
 > $ oc adm policy add-cluster-role-to-group --rolebinding-name self-provisioners self-provisioner system:authenticated:oauth
+
+--rolebinding-name で名付けができる(11/24)
