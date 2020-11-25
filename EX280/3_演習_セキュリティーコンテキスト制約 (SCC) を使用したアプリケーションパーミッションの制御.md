@@ -41,3 +41,17 @@
 gitlabというpod?deployment？にsaを割り当てた -> このpodには誰でもアクセスできるようになった
 
 > $ oc expose service gitlab --port 80
+
+
+#### ２回目
+
+> oc logs pod/正式なpod名
+
+> $ oc logs pod/gitlab-7d67db7875-gcsjl
+
+> $ oc adm policy add-scc-to-user anyuid -z gitlab-sa
+
+> $ oc set serviceaccount deployment gitlab gitlab-sa
+
+ロールがエンチャントされたsaを、デプロイ に紐付ける
+
