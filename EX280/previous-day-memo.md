@@ -124,8 +124,47 @@ $ oc adm policy add-sc-to-user anyuid -z gitlab-sa
 > $ oc set sa deployment gitlab gitlab-sa  (△)
 
 
-
 ## 第5章
+
+### トラブルシューティング
+
+### edge route
+
+既存のサービス(todo-http)を用いて、edge routeを作成
+
+$ oc create route edge todo-https --service=todo-http --hostname=xxx.com
+
+#### アクセスのためには認証がいる(2通り)
+
+1. Firefoxで警告を進む
+
+2. caを取得して、それと比較することでアクセスできるようになる
+
+> $ oc extract secrets/router-ca --keys tls.crt -n openshift-ingress-operator
+
+もしくは、管理者は取得したcaをもらう
+
+> curl -I -v --cacert tls.crt https://xxx.com
+
+これでSSL Handshakeをクリアできる
+
+
+### passthrough route
+
+passthroughはSNI => TLS化が必須
+
+**手順：opensslでcrtを作成 -> 作成したcrtとkeyを使用してsecretを作成 -> 作成したsecretが埋め込まれたpodを作成 -> passthrough edge作成**
+
+- opensslコマンドは覚えられない
+
+$ oc create secret tls todo-certs --cert certs/training.crt --key certs/training.key
+
+$ oc create -f todo-app-v2.yaml
+
+$ oc create route passthrough todo-https --service todo-https --port yyyy(宛先のserviceのport) --hostname xxxx.com
+
+$ curl -v -I --cacert certs/**training-CA.pem** https://xxxx.com
+
 
 ## 第6章
 
@@ -257,3 +296,44 @@ $ oc scale --replicas=2 machineset xxxx -n **openshift-machine-api**
 
 ### 自動スケーリング
 
+**ClusterAutoscalerがあることが前提**
+
+- ClusterAutoscaler
+
+```
+apiVersion: "autoscaling.openshift.io/v1"
+kind: "ClusterAutoscaler"
+metadata:
+  name: "default"
+spec:
+  podPriorityThreshold: -10
+  resourceLimits:
+    maxNodesTotal: 6                                                <- クラスター内に作成できるnode数
+scaleDown:
+    enabled: true　                                                 <- trueであれば有効？
+    delayAfterAdd: 3m
+    unneededTime: 3m
+```
+
+
+- MashineAutoscaler
+
+```
+apiVersion: "autoscaling.openshift.io/v1beta1"
+kind: "MachineAutoscaler"
+metadata:
+  name: "MACHINE-AUTOSCALER-NAME"      
+  namespace: "openshift-machine-api"    
+spec:
+  minReplicas: 1                                                    <- minのmachine数
+  maxReplicas: 4                                                    <- maxのmachine数
+  scaleTargetRef:
+    apiVersion: machine.openshift.io/v1beta1 kind: MachineSet
+    name: MACHINE-SET-NAME                                          <- machinesetの名前
+```
+
+--- 
+
+$ oc scale machineset xxxx -n openshift-machine-api -replica=3
+
+もしくは、yamlの編集
