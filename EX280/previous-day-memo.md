@@ -107,6 +107,9 @@ $ oc set volume deployment/test --add --type secret --secret-name test --mount-p
 
 > $ oc set env pod/xxxxx-xyjsdhudbcdcw **--list**
 
+-> 現在、記述されている環境変数が表示される
+
+
 oc create secret generic mysql --from-literal user=myuser --from-literal password=redhat123 --from-literal database=test_secrets --from-literal hostname=mysql 
 
 **エラーには、oc describeもしくは、oc logs**
@@ -119,4 +122,129 @@ $ oc create sa gitlab-sa
 $ oc adm policy add-sc-to-user anyuid -z gitlab-sa
 
 > $ oc set sa deployment gitlab gitlab-sa  (△)
+
+
+
+## 第5章
+
+## 第6章
+
+### label
+
+#### podへのlabel
+
+
+#### プロジェクトへのnodeSelectorの付加
+
+**このプロジェクトでは、指定したラベルを持つノードにすべての Pod がデプロイされます**
+
+$ oc **adm** new-project demo --node-selector "tier=1"
+
+既存のプロジェクトにデフォルトノードセレクターを設定
+
+$ oc annotate namespace demo openshift.io/node-selector="tier=2" --overwrite
+
+![image1](../images/label1.png)
+
+![image2](../images/label2.png)
+
+
+### リソース使用量の制限(3種類)
+
+**勘違いしやすいから注意**
+
+![image3](../images/resource.png)
+
+#### podのスケジューリングに使用されるpodのリクエストリミット
+
+リクエスト　と　リミット
+
+```
+    spec:
+      containers:
+      - image: quay.io/redhattraining/hello-world-nginx:v1.0
+        name: hello-world-nginx
+        resources:
+          requests:
+            cpu: "10m"
+            memory: 20Mi
+          limits:
+            cpu: "80m"
+            memory: 100Mi
+```
+
+もしくは、
+
+
+$ oc set resources deployment xxxx --requests cpu=10m,memory=20Mi --limits cpu=20m,memory=80Mi
+
+#### 制限の確認
+
+- 制限を確認
+
+$ oc describe node master01
+
+- 実際の使用量を確認
+
+$ oc adm top nodes ~
+
+
+### quota
+
+- yamlで定義
+
+```
+spec: 
+  hard: 
+    (リソース): yy
+    ~
+```
+
+->  $ oc create --save-config -f dev-quota.yml
+
+
+- こまんど
+
+$ oc create quota xxxx --hard (リソース)=yy,~
+
+
+### 制限範囲
+
+```
+apiVersion: "v1"
+kind: "LimitRange"
+metadata:
+  name: "dev-limits"
+spec:
+  limits:
+    - type: "Pod"
+      max:
+        cpu: "500m"
+        memory: "750Mi"
+      min:
+        cpu: "10m"
+        memory: "5Mi"
+    - type: "Container"
+      default:
+        cpu: "100m"
+        memory: "100Mi"
+      max:
+        cpu: "500m"
+        memory: "750Mi"
+      min:
+        cpu: "10m"
+        memory: "5Mi"
+```
+
+->  $ oc create --save-config -f dev-limits.yml
+
+- コマンドはない
+
+
+### HPA(Horizotal Pod Autoscaler)
+
+$ oc autoscale deployment xxxx --min=2 --max=5 --cpu-percent=50
+
+
+## 第7章
 
