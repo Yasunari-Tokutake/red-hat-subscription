@@ -248,3 +248,12 @@ $ oc autoscale deployment xxxx --min=2 --max=5 --cpu-percent=50
 
 ## 第7章
 
+### ワーカーノードの手動スケーリング
+
+$ oc scale --replicas=2 machineset xxxx -n **openshift-machine-api**
+
+もしくは、yamlの編集
+
+
+### 自動スケーリング
+
